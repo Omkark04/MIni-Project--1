@@ -98,15 +98,13 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'Mini Project',             # Default DB name
-        'USER': 'postgres',             # Default username
-        'PASSWORD': '198168',  # Enter the password you set
-        'HOST': 'localhost',            # Local DB
-        'PORT': '5432',                 # Default port
+        'NAME': 'Mini Project',   
+        'USER': 'postgres', 
+        'PASSWORD': '198168',  
+        'HOST': 'localhost',
+        'PORT': '5432',                
     }
 }
-
-
 
 
 # Password validation
