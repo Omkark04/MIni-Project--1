@@ -9801,7 +9801,7 @@ html_doc="""
 soup = bs(html_doc, 'html.parser')
 
 for link in soup.find_all('a'):
-    if link['class'] =='base-card__full-link':
+    if 'base-card__full-link' in link.get('class', []):
         print(link.get('href'))
 n=input("e")
 driver.quit()
