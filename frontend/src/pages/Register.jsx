@@ -14,7 +14,7 @@ export default function Register() {
             <p className="auth-subtitle">Join CareerPulse and start your career journey</p>
           </div>
           
-          <Form route="api/register-data/" method="register" />
+          <Form route="register-data/" method="register" />
           
           <div className="auth-footer">
             <p className="auth-switch">

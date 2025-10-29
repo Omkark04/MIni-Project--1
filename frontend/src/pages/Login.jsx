@@ -14,7 +14,7 @@ export default function Login() {
           </div>
           
           <div className="form-wrapper fade-in-up delay-2">
-            <Form route="api/token/" method="login" />
+            <Form route="token/" method="login" />
           </div>
           
           <div className="auth-footer fade-in delay-3">

@@ -75,3 +75,12 @@ class CreateUserView(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = [AllowAny]
+
+class Rform(generics.CreateAPIView):
+    @permission_classes([AllowAny])
+
+    def post(self, request, *args, **kwargs):
+        return Response({
+            "status": True,
+            "message": f"Data Received {request.data}"
+        }, status=status.HTTP_200_OK)
