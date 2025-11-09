@@ -1,5 +1,31 @@
 from django.db import models
 from django.utils import timezone
+import uuid
+
+class ScrapingSession(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    name = models.CharField(max_length=255, blank=True)
+    categories = models.JSONField(default=list)
+    locations = models.JSONField(default=list)
+    total_jobs_scraped = models.IntegerField(default=0)
+    created_at = models.DateTimeField(default=timezone.now)
+    completed_at = models.DateTimeField(null=True, blank=True)
+    status = models.CharField(
+        max_length=20,
+        choices=[
+            ('running', 'Running'),
+            ('completed', 'Completed'),
+            ('failed', 'Failed'),
+        ],
+        default='running'
+    )
+    
+    class Meta:
+        db_table = 'scraping_sessions'
+        ordering = ['-created_at']
+    
+    def __str__(self):
+        return f"Session {self.id} - {self.created_at.strftime('%Y-%m-%d %H:%M')}"
 
 class JobListing(models.Model):
     CATEGORY_CHOICES = [
@@ -30,6 +56,7 @@ class JobListing(models.Model):
         ("Web Design", "Web Design"),
     ]
     
+    session = models.ForeignKey(ScrapingSession, on_delete=models.CASCADE, related_name='jobs', null=True, blank=True)
     title = models.CharField(max_length=255)
     category = models.CharField(max_length=50, choices=CATEGORY_CHOICES, null=True, blank=True)
     company = models.CharField(max_length=255)

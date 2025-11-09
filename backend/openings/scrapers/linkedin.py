@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand
 from django.core.files.storage import default_storage
-from ..models import JobListing
+from ..models import JobListing, ScrapingSession
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
@@ -13,6 +13,7 @@ from bs4 import BeautifulSoup as bs
 import requests
 import os
 import re
+import uuid
 
 # Category detection mapping
 CATEGORY_KEYWORDS = {
@@ -73,7 +74,7 @@ def download_image(img_url, folder_path, filename):
         print(f"Error downloading image: {e}")
     return None
 
-def scrape_linkedin_jobs(keywords="Data Scientist", location="Germany", category=None):
+def scrape_linkedin_jobs(keywords="Data Scientist", location="Germany", category=None, session=None):
     # Configure Chrome options
     chrome_options = Options()
     # chrome_options.add_argument("--headless")  # Remove for debugging
@@ -225,18 +226,17 @@ def scrape_linkedin_jobs(keywords="Data Scientist", location="Germany", category
                 
                 # Only save if we have valid data
                 if title != "N/A" and company != "N/A":
-                    # Create or update job listing
-                    job, created = JobListing.objects.get_or_create(
+                    # Create job listing with session
+                    job = JobListing.objects.create(
+                        session=session,  # Associate with the session
                         title=title,
                         company=company,
                         location=location_text,
-                        defaults={
-                            'category': final_category,
-                            'date_posted': date,
-                            'job_link': link,
-                            'image_url': img_url,
-                            'image_filename': img_filename
-                        }
+                        category=final_category,
+                        date_posted=date,
+                        job_link=link,
+                        image_url=img_url,
+                        image_filename=img_filename
                     )
                     
                     jobs_data.append({
@@ -248,7 +248,7 @@ def scrape_linkedin_jobs(keywords="Data Scientist", location="Germany", category
                         'link': link,
                         'image_url': img_url,
                         'image_filename': img_filename,
-                        'created': created
+                        'id': job.id
                     })
                     
                     print(f"✅ Processed: {title} at {company} | Category: {final_category}")
@@ -276,18 +276,35 @@ class Command(BaseCommand):
         parser.add_argument('--keywords', type=str, default='Data Scientist', help='Job keywords to search')
         parser.add_argument('--location', type=str, default='Germany', help='Location to search')
         parser.add_argument('--category', type=str, help='Job category')
+        parser.add_argument('--session_id', type=str, help='Scraping session ID')
     
     def handle(self, *args, **options):
         keywords = options['keywords']
         location = options['location']
         category = options['category']
+        session_id = options['session_id']
         
         self.stdout.write(f"🔍 Scraping LinkedIn jobs for '{keywords}' in '{location}'")
         if category:
             self.stdout.write(f"🏷️ Category: {category}")
         
-        results = scrape_linkedin_jobs(keywords, location, category)
+        # Get or create session
+        session = None
+        if session_id:
+            try:
+                session = ScrapingSession.objects.get(id=session_id)
+            except ScrapingSession.DoesNotExist:
+                self.stdout.write(self.style.WARNING(f"⚠️ Session {session_id} not found, creating new session"))
+        
+        if not session:
+            session = ScrapingSession.objects.create(
+                name=f"Manual Scrape - {keywords} in {location}",
+                categories=[category] if category else [],
+                locations=[location]
+            )
+        
+        results = scrape_linkedin_jobs(keywords, location, category, session)
         
         self.stdout.write(
-            self.style.SUCCESS(f'✅ Successfully scraped {len(results)} jobs')
+            self.style.SUCCESS(f'✅ Successfully scraped {len(results)} jobs for session {session.id}')
         )

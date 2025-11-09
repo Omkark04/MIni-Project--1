@@ -85,7 +85,7 @@ const JobListPage = () => {
     <div className="job-list-page">
       <Navbar/>
       <div className="page-header">
-        <h1>💼 Job Listings</h1>
+        <h1>Job Listings</h1>
         <p>Browse and filter through available job opportunities</p>
       </div>
 
@@ -108,7 +108,7 @@ const JobListPage = () => {
             disabled={loading}
             className="refresh-btn"
           >
-            {loading ? '🔄 Refreshing...' : '🔄 Refresh'}
+            {loading ? 'Refreshing...' : 'Refresh'}
           </button>
         </div>
 
@@ -134,7 +134,6 @@ const JobListPage = () => {
 
         {!loading && allJobs.length > 0 && filteredJobs.length === 0 && (
           <div className="empty-state">
-            <div className="empty-icon">🔍</div>
             <h3>No matching jobs found</h3>
             <p>Try adjusting your filters to see more results.</p>
             <button onClick={() => setFilters({
