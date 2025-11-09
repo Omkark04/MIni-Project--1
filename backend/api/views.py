@@ -8,7 +8,32 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from django.contrib.auth import authenticate, login, logout
 from django.middleware.csrf import get_token
+from .ml_models import Job_Prediction
+from dotenv import load_dotenv
+import os
 
+load_dotenv()
+
+ADMIN_USERNAME = os.getenv('ADMIN_USERNAME')
+ADMIN_PASSWORD = os.getenv('ADMIN_PASSWORD')
+
+class AdminVerify(APIView):
+    permission_classes=[AllowAny]
+
+    def post(self, request):
+        username=request.data.get('username')
+        password=request.data.get('password')
+
+        if username == ADMIN_USERNAME and password == ADMIN_PASSWORD:
+            return Response({
+                'status': True,
+                'message': 'Welcome Admin'
+            }, status=status.HTTP_202_ACCEPTED)
+        else:
+            return Response({
+                'status': False,
+                'message': 'Imposter Alert'
+            }, status=status.HTTP_403_FORBIDDEN)
 # Authentication Views
 class UserRegisterApi(APIView):
     permission_classes=[AllowAny]
@@ -80,7 +105,8 @@ class Rform(generics.CreateAPIView):
     @permission_classes([AllowAny])
 
     def post(self, request, *args, **kwargs):
+        prediction=Job_Prediction(request.data)
         return Response({
             "status": True,
-            "message": f"Data Received {request.data}"
+            "message": f"{prediction.predict()}"
         }, status=status.HTTP_200_OK)

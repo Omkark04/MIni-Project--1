@@ -4,6 +4,8 @@ import Login from "./pages/Login";
 import Home from "./pages/Home";
 import NotFound from "./pages/NotFound";
 import ProtectedRoute from "./components/ProtectedRoutes";
+import JobListPage from "./components/JobList";
+import ScrapePage from "./pages/ScrapePage";
 
 function App() {
   return (
@@ -14,6 +16,9 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/logout" element={<Navigate to="/login" />} />
         <Route path="*" element={<NotFound />} />
+        <Route path="/jobs" element={<JobListPage />} />
+        <Route path="/scrape" element={<ScrapePage />} />
+
       </Routes>
     </BrowserRouter>
   );

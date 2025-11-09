@@ -1,0 +1,13 @@
+[33m64ee8ac[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m)[m HEAD@{0}: reset: moving to HEAD~1
+[33m6416a51[m HEAD@{1}: reset: moving to HEAD~1
+[33m48cfcd7[m HEAD@{2}: commit: Deletd clf.pkl as big files cannot be pushed
+[33m6416a51[m HEAD@{3}: commit (merge): Merge branch 'main' of https://github.com/Omkark04/MIni-Project--1
+[33m64ee8ac[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m)[m HEAD@{4}: commit: 80% Project is done
+[33mc955f66[m HEAD@{5}: reset: moving to HEAD~1
+[33me770e82[m HEAD@{6}: commit: Done
+[33mc955f66[m HEAD@{7}: commit: Done
+[33mcdc9c44[m HEAD@{8}: commit: ok
+[33mfb44597[m HEAD@{9}: commit: Login, Register with Navbar is done with working backend and PSQL database
+[33ma08001c[m HEAD@{10}: commit: Authentication setup is done using JWT, REST Api, Django, React
+[33m2991668[m HEAD@{11}: commit: NEw setup incoming
+[33m8898892[m HEAD@{12}: clone: from https://github.com/Omkark04/MIni-Project--1.git

@@ -24,5 +24,20 @@ api.interceptors.request.use(
   },
   (error) => Promise.reject(error)
 );
+export const jobAPI = {
+  // Get all jobs with pagination
+  getJobs: (page = 1, pageSize = 100) => 
+    api.get('/jobs/', { params: { page, page_size: pageSize } }),
+  
+  // Get specific job
+  getJob: (id) => api.get(`/jobs/${id}/`),
+  
+  // Scrape new jobs
+  scrapeJobs: (keywords, location) => 
+    api.post('/jobs/scrape_jobs/', { keywords, location }),
+  
+  // Get job image
+  getJobImage: (id) => api.get(`/jobs/${id}/get_image/`),
+};
 
 export default api;

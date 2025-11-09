@@ -126,7 +126,7 @@ function Navbar() {
               href="/roles"
               onClick={(e) => {
                 e.preventDefault();
-                handleNavClick("/roles");
+                handleNavClick("/jobs");
               }}
             >
               Job Roles

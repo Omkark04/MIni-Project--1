@@ -1,13 +1,15 @@
 from selenium import webdriver
 import time 
-import os
 import pandas as pd
 from bs4 import BeautifulSoup as bs
-from selenium.webdriver.support.select import Select
-from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+import requests
+import os
+from urllib.parse import urljoin
 
+# Initialize the driver
 driver = webdriver.Chrome()
 
 driver.get('https://www.linkedin.com/jobs/search?keywords=Data%20Analyst&location=United%20States&geoId=&trk=public_jobs_jobs-search-bar_search-submit&original_referer=https%3A%2F%2Fwww.linkedin.com%2Fjobs%2Fsearch%3Fkeywords%3D%26location%3DUnited%2520States%26geoId%3D103644278%26trk%3Dpublic_jobs_jobs-search-bar_search-submit%26position%3D1%26pageNum%3D0&position=1&pageNum=0')
@@ -9801,7 +9803,7 @@ html_doc="""
 soup = bs(html_doc, 'html.parser')
 
 for link in soup.find_all('a'):
-    if link['class'] =='base-card__full-link':
+    if 'base-card__full-link' in link.get('class', []):
         print(link.get('href'))
 n=input("e")
 driver.quit()
