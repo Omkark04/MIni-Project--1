@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useCallback } from "react";
 import "../styles/Rform.css";
 import api from "../api";
 
@@ -11,7 +11,11 @@ function Rform() {
   });
   const [skills, setSkills] = useState([""]);
   const [loading, setLoading] = useState(false);
+  const [jobsLoading, setJobsLoading] = useState(false);
   const [errors, setErrors] = useState({});
+  const [predictedCategory, setPredictedCategory] = useState("");
+  const [categoryJobs, setCategoryJobs] = useState([]);
+  const [showJobs, setShowJobs] = useState(false);
 
   // Validate form fields
   const validateForm = () => {
@@ -46,36 +50,75 @@ function Rform() {
 
     setLoading(true);
     setErrors({});
+    setPredictedCategory("");
+    setCategoryJobs([]);
+    setShowJobs(false);
 
     try {
       const validSkills = skills.filter((skill) => skill.trim() !== "");
       
+      // Send data to your prediction endpoint
       const res = await api.post("api/rform-data/", {
         ...formData,
         skills: validSkills,
       });
 
       if (res.data.status) {
-        alert("✅ Success: " + res.data.message);
+        const category = res.data.predicted_category || res.data.message;
+        setPredictedCategory(category);
         
-        // Reset form
-        setFormData({
-          name: "",
-          location: "",
-          education: "",
-          exp: "",
-        });
-        setSkills([""]);
+        alert("Success: " + res.data.message);
+        
       } else {
-        setErrors({ submit: res.data.errors || "Registration failed" });
+        setErrors({ submit: res.data.errors || "Prediction failed" });
       }
     } catch (error) {
       const errorMessage =
-        error.response?.data?.message || "❌ An error occurred. Please try again.";
+        error.response?.data?.message || "An error occurred. Please try again.";
       setErrors({ submit: errorMessage });
     } finally {
       setLoading(false);
     }
+  };
+
+  // Get jobs for predicted category
+  const handleGetJobs = async () => {
+    if (!predictedCategory) {
+      alert("Please predict a job category first");
+      return;
+    }
+
+    setJobsLoading(true);
+    setShowJobs(true);
+
+    try {
+      const res = await api.get(`jobs/?category=${encodeURIComponent(predictedCategory)}`);
+      
+      // Handle the response based on your API structure
+      const jobs = res.data.results || res.data.jobs || res.data;
+      setCategoryJobs(Array.isArray(jobs) ? jobs : []);
+      
+    } catch (error) {
+      const errorMessage =
+        error.response?.data?.message || "Error fetching jobs";
+      setErrors({ jobs: errorMessage });
+    } finally {
+      setJobsLoading(false);
+    }
+  };
+
+  // Reset form after user is done
+  const resetForm = () => {
+    setFormData({
+      name: "",
+      location: "",
+      education: "",
+      exp: "",
+    });
+    setSkills([""]);
+    setPredictedCategory("");
+    setCategoryJobs([]);
+    setShowJobs(false);
   };
 
   // Handle input changes
@@ -160,13 +203,9 @@ function Rform() {
             onChange={(e) => handleInputChange("name", e.target.value)}
             placeholder="Enter your full name"
             required
-            aria-invalid={errors.name ? "true" : "false"}
-            aria-describedby={errors.name ? "name-error" : undefined}
           />
           {errors.name && (
-            <span id="name-error" className="error-text" role="alert">
-              {errors.name}
-            </span>
+            <span className="error-text">{errors.name}</span>
           )}
         </div>
 
@@ -211,13 +250,9 @@ function Rform() {
             placeholder="e.g., 1"
             min="0"
             step="0.5"
-            aria-invalid={errors.exp ? "true" : "false"}
-            aria-describedby={errors.exp ? "exp-error" : undefined}
           />
           {errors.exp && (
-            <span id="exp-error" className="error-text" role="alert">
-              {errors.exp}
-            </span>
+            <span className="error-text">{errors.exp}</span>
           )}
         </div>
 
@@ -225,9 +260,7 @@ function Rform() {
         <div className="skills-section">
           <h3>Skills *</h3>
           {errors.skills && (
-            <span className="error-text" role="alert">
-              {errors.skills}
-            </span>
+            <span className="error-text">{errors.skills}</span>
           )}
           <div className="skills-list">
             {skills.map((skill, index) => (
@@ -237,16 +270,14 @@ function Rform() {
                   value={skill}
                   onChange={(e) => handleSkillChange(index, e.target.value)}
                   placeholder={`Skill ${index + 1} (e.g., Python, React)`}
-                  aria-label={`Skill ${index + 1}`}
                 />
                 {skills.length > 1 && (
                   <button
                     type="button"
                     className="delete-skill"
                     onClick={() => delSkill(index)}
-                    aria-label={`Delete skill ${index + 1}`}
-                    title="Remove this skill"
-                  >Delete
+                  >
+                    Delete
                   </button>
                 )}
               </div>
@@ -256,7 +287,6 @@ function Rform() {
             type="button"
             className="add-btn"
             onClick={addSkill}
-            aria-label="Add another skill"
           >
             Add Skill
           </button>
@@ -267,17 +297,14 @@ function Rform() {
           type="submit"
           className="predict-btn"
           disabled={loading}
-          aria-busy={loading}
         >
           {loading ? (
             <>
               <span className="spinner"></span>
-              Processing...
+              Predicting...
             </>
           ) : (
-            <>
-              Predict Job Role
-            </>
+            "Predict Job Role"
           )}
         </button>
 
@@ -286,6 +313,89 @@ function Rform() {
           <span className="asterisk">*</span> Required fields
         </p>
       </form>
+
+      {/* PREDICTION RESULT */}
+      {predictedCategory && (
+        <div className="prediction-result">
+          <div className="prediction-card">
+            <h3>Predicted Job Category</h3>
+            <div className="predicted-category">{predictedCategory}</div>
+            <p>Based on your skills and experience, we recommend exploring {predictedCategory} roles.</p>
+            
+            {/* GET JOB ROLES BUTTON */}
+            <button
+              type="button"
+              className="get-jobs-btn"
+              onClick={handleGetJobs}
+              disabled={jobsLoading}
+            >
+              {jobsLoading ? (
+                <>
+                  <span className="spinner"></span>
+                  Loading Jobs...
+                </>
+              ) : (
+                "Get Job Roles"
+              )}
+            </button>
+
+            {/* RESET BUTTON */}
+            <button
+              type="button"
+              className="reset-btn"
+              onClick={resetForm}
+            >
+              Make Another Prediction
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* JOBS DISPLAY */}
+      {showJobs && (
+        <div className="jobs-section">
+          <h3>Available {predictedCategory} Jobs</h3>
+          
+          {errors.jobs && (
+            <div className="error-banner">{errors.jobs}</div>
+          )}
+
+          {jobsLoading ? (
+            <div className="loading-jobs">Loading job listings...</div>
+          ) : categoryJobs.length > 0 ? (
+            <div className="jobs-list">
+              <p className="jobs-count">Found {categoryJobs.length} jobs in {predictedCategory}</p>
+              
+              {categoryJobs.map((job, index) => (
+                <div key={job.id || index} className="job-card">
+                  <div className="job-header">
+                    <h4 className="job-title">{job.title}</h4>
+                    <span className="job-company">{job.company}</span>
+                  </div>
+                  <div className="job-details">
+                    <span className="job-location">📍 {job.location}</span>
+                  </div>
+                  {job.job_link && (
+                    <a 
+                      href={job.job_link} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="job-link"
+                    >
+                      View Job Details →
+                    </a>
+                  )}
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="no-jobs">
+              <p>No jobs found for {predictedCategory} category.</p>
+              <p>Try scraping some jobs first or check back later.</p>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }

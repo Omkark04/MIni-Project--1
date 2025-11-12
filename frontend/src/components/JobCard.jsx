@@ -54,12 +54,6 @@ const JobCard = ({ job }) => {
         >
           View on LinkedIn
         </a>
-        
-        {job.image_url && (
-          <span className="has-image" title="Company image available">
-            🖼️
-          </span>
-        )}
       </div>
     </div>
   );

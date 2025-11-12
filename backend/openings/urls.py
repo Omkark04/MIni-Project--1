@@ -4,7 +4,8 @@ from .views import (
     JobListingListView, 
     JobListingDetailView, 
     FilterOptionsView,
-    ScrapingSessionView
+    ScrapingSessionView,
+    JobCategory
 )
 
 urlpatterns = [
@@ -15,4 +16,5 @@ urlpatterns = [
     path("<int:pk>/", JobListingDetailView.as_view(), name='job-detail'),
     path("<int:pk>/get_image/", JobListingDetailView.as_view(), name='job-image'),
     path("filter_options/", FilterOptionsView.as_view(), name='filter-options'),
+    path('category/<str:category>', JobCategory.as_view(), name='category')
 ]

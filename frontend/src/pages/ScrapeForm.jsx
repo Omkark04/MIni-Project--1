@@ -17,7 +17,7 @@ const CATEGORIES = [
   "Advocate", "Arts", "Automation Testing", "BlockChain", "Business Analyst",
   "Civil Engineer", "Data Science", "Database", "DevOps", ".Net", "ETL",
   "Electrical", "HR", "Hadoop", "Health and Fitness", "Java", "Mechanical",
-  "Network", "Operations", "PMO", "Python", "SAP", "Sales", "Testing", "Web Design"
+  "Network", "Operations", "PMO", "Python Developer", "SAP", "Sales", "Testing", "Web Design"
 ];
 
 const ScrapeForm = ({ onScrape, loading }) => {

@@ -18,6 +18,7 @@ function App() {
         <Route path="*" element={<NotFound />} />
         <Route path="/jobs" element={<JobListPage />} />
         <Route path="/scrape" element={<ScrapePage />} />
+        <Route path="/rform" element={<ScrapePage />} />
 
       </Routes>
     </BrowserRouter>

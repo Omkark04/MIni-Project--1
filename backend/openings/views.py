@@ -111,10 +111,10 @@ class JobListingScrapeView(APIView):
                         total_jobs += len(results)
                         scraped_jobs.extend(results)
                         
-                        print(f"✅ Scraped {len(results)} jobs for {category} in {location}")
+                        print(f"Scraped {len(results)} jobs for {category} in {location}")
                         
                     except Exception as e:
-                        print(f"❌ Error scraping {category} in {location}: {str(e)}")
+                        print(f"Error scraping {category} in {location}: {str(e)}")
                         continue
             
             # Update session status
@@ -216,3 +216,18 @@ class FilterOptionsView(APIView):
             'companies': [comp for comp in companies if comp and comp != "N/A"],
             'sessions': session_options,
         })
+    
+class JobCategory(APIView):
+    def post(self, request):
+        try:
+            category = request.data
+            data = JobListing.objects.filter(category=category)
+            return Response({
+                'status':True,
+                'message': data
+            }, status=status.HTTP_200_OK)
+        except JobListing.DoesNotExist:
+            return Response({
+                'status':False,
+                'message': "Data for this category is not available right now"
+            }, status=status.HTTP_204_NO_CONTENT)
