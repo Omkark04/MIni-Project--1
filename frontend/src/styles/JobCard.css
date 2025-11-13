@@ -81,7 +81,7 @@
 
 .category {
   background: var(--primary-color);
-  color: white;
+  color: var(--text-secondary);
   padding: 0.2rem 0.5rem;
   border-radius: 12px;
   font-size: 0.75rem;

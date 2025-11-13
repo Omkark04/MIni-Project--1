@@ -91,7 +91,7 @@ def scrape_linkedin_jobs(keywords="Data Scientist", location="Germany", category
     jobs_data = []
     
     try:
-        print("🚀 Starting LinkedIn scraper...")
+        print("Starting LinkedIn scraper...")
         
         # Create images folder
         images_folder = 'job_images'
@@ -101,15 +101,15 @@ def scrape_linkedin_jobs(keywords="Data Scientist", location="Germany", category
         
         # Use direct URL with parameters
         url = f"https://www.linkedin.com/jobs/search/?keywords={keywords.replace(' ', '%20')}&location={location.replace(' ', '%20')}"
-        print(f"🌐 Navigating to: {url}")
+        print(f"Navigating to: {url}")
         driver.get(url)
         
         # Wait for page to load
-        print("⏳ Waiting for page to load...")
+        print("Waiting for page to load...")
         time.sleep(5)
         
         # Scroll to load more results
-        print("📜 Scrolling to load more jobs...")
+        print("Scrolling to load more jobs...")
         for _ in range(3):
             driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
             time.sleep(2)
@@ -131,13 +131,13 @@ def scrape_linkedin_jobs(keywords="Data Scientist", location="Germany", category
         for selector in job_selectors:
             job_cards = soup.select(selector)
             if job_cards:
-                print(f"✅ Found {len(job_cards)} job cards with selector: {selector}")
+                print(f"Found {len(job_cards)} job cards with selector: {selector}")
                 break
         
         if not job_cards:
             job_cards = soup.find_all(['div', 'li'], class_=lambda x: x and any(keyword in str(x).lower() for keyword in ['job', 'card', 'result']))
         
-        print(f"📊 Found {len(job_cards)} total job cards")
+        print(f"Found {len(job_cards)} total job cards")
         
         for i, card in enumerate(job_cards[:20]):  # Limit for testing
             try:
@@ -251,23 +251,23 @@ def scrape_linkedin_jobs(keywords="Data Scientist", location="Germany", category
                         'id': job.id
                     })
                     
-                    print(f"✅ Processed: {title} at {company} | Category: {final_category}")
+                    print(f"Processed: {title} at {company} | Category: {final_category}")
                 else:
-                    print(f"⚠️ Skipped incomplete job card: {card.get_text()[:100]}...")
+                    print(f"Skipped incomplete job card: {card.get_text()[:100]}...")
                 
             except Exception as e:
-                print(f"❌ Error parsing job card {i}: {e}")
+                print(f"Error parsing job card {i}: {e}")
                 continue
         
-        print(f"🎉 Successfully processed {len(jobs_data)} valid jobs")
+        print(f"Successfully processed {len(jobs_data)} valid jobs")
         return jobs_data
         
     except Exception as e:
-        print(f"💥 Critical error in scraper: {e}")
+        print(f"Critical error in scraper: {e}")
         return []
     finally:
         driver.quit()
-        print("🔚 Browser closed")
+        print("Browser closed")
 
 class Command(BaseCommand):
     help = 'Scrape LinkedIn jobs'
@@ -284,9 +284,9 @@ class Command(BaseCommand):
         category = options['category']
         session_id = options['session_id']
         
-        self.stdout.write(f"🔍 Scraping LinkedIn jobs for '{keywords}' in '{location}'")
+        self.stdout.write(f"Scraping LinkedIn jobs for '{keywords}' in '{location}'")
         if category:
-            self.stdout.write(f"🏷️ Category: {category}")
+            self.stdout.write(f"Category: {category}")
         
         # Get or create session
         session = None
@@ -294,7 +294,7 @@ class Command(BaseCommand):
             try:
                 session = ScrapingSession.objects.get(id=session_id)
             except ScrapingSession.DoesNotExist:
-                self.stdout.write(self.style.WARNING(f"⚠️ Session {session_id} not found, creating new session"))
+                self.stdout.write(self.style.WARNING(f"Session {session_id} not found, creating new session"))
         
         if not session:
             session = ScrapingSession.objects.create(
@@ -306,5 +306,5 @@ class Command(BaseCommand):
         results = scrape_linkedin_jobs(keywords, location, category, session)
         
         self.stdout.write(
-            self.style.SUCCESS(f'✅ Successfully scraped {len(results)} jobs for session {session.id}')
+            self.style.SUCCESS(f'Successfully scraped {len(results)} jobs for session {session.id}')
         )

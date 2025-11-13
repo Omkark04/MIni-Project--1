@@ -115,7 +115,7 @@ function Navbar() {
               href="/predictor"
               onClick={(e) => {
                 e.preventDefault();
-                handleNavClick("/predictor");
+                handleNavClick("/rform");
               }}
             >
               Job Predictor
@@ -134,22 +134,14 @@ function Navbar() {
           </li>
           <li>
             <a
-              href="/about"
-              onClick={(e) => {
-                e.preventDefault();
-                handleNavClick("/about");
-              }}
+              href="#about"
             >
               About Us
             </a>
           </li>
           <li>
             <a
-              href="/faqs"
-              onClick={(e) => {
-                e.preventDefault();
-                handleNavClick("/faqs");
-              }}
+              href="#faq"
             >
               FAQs
             </a>

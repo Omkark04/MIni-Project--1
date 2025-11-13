@@ -6,6 +6,7 @@ import NotFound from "./pages/NotFound";
 import ProtectedRoute from "./components/ProtectedRoutes";
 import JobListPage from "./components/JobList";
 import ScrapePage from "./pages/ScrapePage";
+import Rform from "./components/Rform";
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
         <Route path="*" element={<NotFound />} />
         <Route path="/jobs" element={<JobListPage />} />
         <Route path="/scrape" element={<ScrapePage />} />
+        <Route path="/rform" element={<Rform />} />
 
       </Routes>
     </BrowserRouter>

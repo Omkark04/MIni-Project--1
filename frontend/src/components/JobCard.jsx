@@ -3,9 +3,14 @@ import '../styles/JobCard.css';
 
 const JobCard = ({ job }) => {
   const formatDate = (dateString) => {
-    if (!dateString || dateString === 'N/A') return 'Recently';
-    return dateString;
-  };
+  if (!dateString || dateString === 'N/A') return 'Recently';
+  const date = new Date(dateString);
+  if (isNaN(date)) return 'Invalid Date';
+  const yyyy = date.getFullYear();
+  const mm = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-based
+  const dd = String(date.getDate()).padStart(2, '0');
+  return `${yyyy}-${mm}-${dd}`;
+};
 
   const getImageUrl = () => {
     if (job.image_filename) {
@@ -40,7 +45,7 @@ const JobCard = ({ job }) => {
             {job.category && (
               <span className="category">🏷️ {job.category}</span>
             )}
-            <span className="date">📅 {formatDate(job.date_posted)}</span>
+            <span className="date">📅 {formatDate(job.created_at)}</span>
           </div>
         </div>
       </div>
@@ -54,12 +59,6 @@ const JobCard = ({ job }) => {
         >
           View on LinkedIn
         </a>
-        
-        {job.image_url && (
-          <span className="has-image" title="Company image available">
-            🖼️
-          </span>
-        )}
       </div>
     </div>
   );
